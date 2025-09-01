@@ -1,0 +1,108 @@
+Questions
+Problem Statement
+Medium
+Online Assessment
+Algorithm
+Maximum Stock Profit
+Problem Description
+An investor with limited funds wants to invest in the stock market. They can buy at most one share of each company and cannot exceed their available funds. The future values of the stocks after one year have been predicted.
+
+Your task is to determine the maximum profit the investor can earn by selecting the optimal combination of stocks to buy.
+
+For example, consider the following scenario:
+
+Available funds: saving = 250
+Current stock values: currentValue = [175, 133, 109, 210, 97]
+Predicted future values: futureValue = [200, 125, 128, 228, 133]
+An optimal investment strategy might be to buy stocks at indices 2 and 4 (0-indexed). The current values for these stocks are 109 and 97, respectively. The total investment would be 109 + 97 = 206, which is within the available funds (250).
+
+The predicted future values for these stocks are 128 and 133. The total future value would be 128 + 133 = 261.
+
+The profit would then be 261 - 206 = 55. Therefore, the maximum possible profit for this scenario is 55.
+
+Complete the function selectStock in the editor. The function is expected to return an INTEGER.
+
+The function accepts the following parameters:
+
+int saving: the amount available for investment
+int currentValue[n]: the current stock values
+int futureValue[n]: the values of the stocks after one year
+def selectStock(saving, currentValue, futureValue):
+    # Write your code here
+Examples
+Example 1:
+Input:
+saving = 30
+currentValue = [1, 2, 4, 6]
+futureValue = [5, 3, 5, 6]
+Output: 6
+Explanation: The investor can buy all 4 stocks. Profit for stock 0: (5-1) = 4 Profit for stock 1: (3-2) = 1 Profit for stock 2: (5-4) = 1 Profit for stock 3: (6-6) = 0 Total investment: 1 + 2 + 4 + 6 = 13 (within saving = 30) Total profit: 4 + 1 + 1 + 0 = 6. So, the total profit is 6.
+
+Example 2:
+Input:
+saving = 500
+currentValue = [150, 199, 200, 168, 153]
+futureValue = [140, 175, 199, 121, 111]
+Output: 0
+Explanation: All the stocks lose value during the year (or have no profit potential), so no investment is made. There is no way to make a profit, hence the maximum profit is 0.
+
+Constraints
+0 < n <= 100
+0 < saving <= 30000
+0 <= currentValue[i], futureValue[i] <= 300
+
+
+
+Code Solution:
+#include <bits/stdc++.h>
+using namespace std;
+
+int selectStock(int saving, vector<int>& currentValue, vector<int>& futureValue) {
+    int n = currentValue.size();
+    vector<int> dp(saving+1,0);
+    vector<int> profit(n,0);
+    
+    for(int i=0;i<n;i++){
+        profit[i] = max(0,futureValue[i] - currentValue[i]);
+    }
+    
+    for(int i=0;i<n;i++){
+        if(profit[i] > 0){
+            for(int w = saving; w >= currentValue[i]; w--){
+                dp[w] = max(dp[w],dp[w - currentValue[i]] + profit[i]);
+            }
+        }
+    }
+    return dp[saving];
+}
+
+// -----------------------------
+// Test cases
+// -----------------------------
+void run_tests() {
+    vector<tuple<int, vector<int>, vector<int>, int>> tests = {
+        {30, {1, 2, 4, 6}, {5, 3, 5, 6}, 6},
+        {500, {150, 199, 200, 168, 153}, {140, 175, 199, 121, 111}, 0},
+        {250, {175, 133, 109, 210, 97}, {200, 125, 128, 228, 133}, 55},
+        {10, {2, 3, 5}, {4, 3, 10}, 7}
+    };
+
+    for (int i = 0; i < tests.size(); i++) {
+        int saving;
+        vector<int> currentValue, futureValue;
+        int expected;
+        tie(saving, currentValue, futureValue, expected) = tests[i];
+
+        int result = selectStock(saving, currentValue, futureValue);
+        cout << "Test " << i + 1 
+             << ": Expected " << expected 
+             << ", Got " << result 
+             << " --> " << (result == expected ? "PASS" : "FAIL") 
+             << endl;
+    }
+}
+
+int main() {
+    run_tests();
+    return 0;
+}
