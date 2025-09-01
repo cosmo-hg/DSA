@@ -1,0 +1,165 @@
+Minimum Flips to Achieve Target
+Problem Description
+Start with an initial string of zeros. Choose any digit to flip. When a digit is flipped, its value and those to the right switch state between 0 and 1. Given a target string of binary digits, determine the minimum number of flips required to achieve the target.
+
+Complete the function `minimumFlips` in the editor with the following parameter(s):
+
+`string target`: a string of 0s and 1s to match.
+Returns:
+
+`int`: the minimum number of flips needed to obtain the target string.
+Examples
+Example 1:
+Input: target = '0011'
+Output: 1
+Explanation: The number of digits is length(target)=4. Starting with `0000`, flip the 3rd digit (index 2) to obtain the desired state `0011` after 1 flip.
+
+Example 2:
+Input: target = '1010'
+Output: 4
+Explanation: Starting with `0000`, flip the 4th, 3rd, 2nd and 1st digits in sequence to produce `0000` -> `0001` -> `0010` -> `0101` -> `1010` after 4 operations.
+
+Constraints
+`1 <= length of target <= 10^5`
+`0 <= target[i] <= 1`
+The target string consists of digits 0 and 1.
+/*
+ * Complete the 'minimumFlips' function below.
+ *
+ * The function is expected to return an INTEGER.
+ * The function accepts STRING target as parameter.
+ */
+
+int minimumFlips(string target) {
+
+}
+
+
+Code:
+1. Brute force(O(N2))
+
+#include <bits/stdc++.h>
+using namespace std;
+
+/*
+ * Complete the 'minimumFlips' function below.
+ *
+ * The function is expected to return an INTEGER.
+ * The function accepts STRING target as parameter.
+ */
+int minimumFlips(string target) {
+    int n = target.size();
+    // simulate current state as chars of '0'
+    vector<char> t(n, '0');
+    int cnt = 0;
+
+    for (int i = 0; i < n; i++) {
+        if (t[i] != target[i]) {
+            cnt++;
+            // flip from i to n-1
+            for (int j = i; j < n; j++) {
+                if (t[j] == '0') {
+                    t[j] = '1';
+                } else {
+                    t[j] = '0';
+                }
+            }
+        } else {
+            continue;
+        }
+    }
+    return cnt;
+}
+
+// -----------------------------
+// Test cases
+// -----------------------------
+void run_tests() {
+    vector<pair<string, int>> tests = {
+        {"0011", 1},
+        {"1010", 4},
+        {"0", 0},
+        {"1", 1},
+        {"11111", 1},
+        {"010101", 5}
+    };
+
+    for (int i = 0; i < (int)tests.size(); i++) {
+        string target = tests[i].first;
+        int expected = tests[i].second;
+        int result = minimumFlips(target);
+
+        cout << "Test " << i + 1 
+             << ": Target = " << target
+             << ", Expected = " << expected 
+             << ", Got = " << result 
+             << " --> " << (result == expected ? "PASS" : "FAIL") 
+             << endl;
+    }
+}
+
+int main() {
+    run_tests();
+    return 0;
+}
+
+
+2. Greedy based approach(In above code us jagah he change kar do instead of replacing all to ek loop kam lagega)
+#include <bits/stdc++.h>
+using namespace std;
+
+/*
+ * Complete the 'minimumFlips' function below.
+ *
+ * The function is expected to return an INTEGER.
+ * The function accepts STRING target as parameter.
+ */
+int minimumFlips(string target) {
+    char curr = '0';
+    int flips = 0;
+    int n = target.size();
+
+    for (int i = 0; i < n; i++) {
+        if (target[i] != curr) {
+            flips++;
+            curr = target[i];
+        }
+    }
+    return flips;
+}
+
+// -----------------------------
+// Test cases
+// -----------------------------
+void run_tests() {
+    vector<pair<string, int>> tests = {
+        {"0011", 1},
+        {"1010", 4},
+        {"0", 0},
+        {"1", 1},
+        {"11111", 1},
+        {"010101", 6},
+        {"0000", 0},
+        {"100000", 1},
+        {"0010100", 3}
+    };
+
+    for (int i = 0; i < (int)tests.size(); i++) {
+        string target = tests[i].first;
+        int expected = tests[i].second;
+        int result = minimumFlips(target);
+
+        cout << "Test " << i + 1 
+             << ": Target = " << target
+             << ", Expected = " << expected 
+             << ", Got = " << result 
+             << " --> " << (result == expected ? "PASS" : "FAIL") 
+             << endl;
+    }
+}
+
+int main() {
+    run_tests();
+    return 0;
+}
+
