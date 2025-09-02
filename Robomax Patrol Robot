@@ -1,0 +1,198 @@
+RoboMax Patrol Robot
+Problem Description
+RoboMax is a patrol robot stationed in a high-tech warehouse represented as a grid with R rows and C columns. The robot starts its patrol at the top-left corner of the grid and must finish at the bottom-right corner. The warehouse is divided into square zones, each assigned a reward value indicating how much valuable data RoboMax can collect while passing through that zone.
+
+However, RoboMax has limited battery power and can only visit each zone once. It can move only to an adjacent zone (up, down, left, or right). Not all zones need to be visited, but RoboMax aims to maximize the total reward value it collects during the patrol.
+
+If multiple maximum-reward paths exist, RoboMax will enumerate them all, sort them lexicographically by their move string, and travel along the lexicographically first path.
+
+Your task is to help RoboMax with a program that determines such a path.
+
+Read the input from STDIN and print the output to STDOUT. Do not print arbitrary strings anywhere in the program, as these contribute to the output and test cases will fail.
+
+Constraints
+2 ≤ R, C ≤ 1000
+0 ≤ Reward values ≤ 1000
+Input Format
+The first line will contain two integers, R and C, the number of rows and columns of the grid.
+
+The next R lines each will contain C space-separated positive integers representing the reward values of the zones in the warehouse grid.
+
+Output Format
+The only line of output should display a string representing the sequence of characters representing RoboMax's path.
+
+Use:
+
+U for moving up
+D for moving down
+L for moving left
+R for moving right
+The sequence must represent a valid, lexicographically first path from the top-left to bottom-right, visiting each zone at most once and collecting the maximum reward possible.
+
+Examples
+Example 1:
+Input:
+4 4
+1 1 1 1
+2 2 2 2
+2 2 2 2
+1 1 1 1
+Output:
+DDDRRULURURDDD
+Explanation: Here, in the given grid of 4x4, there are a total of four paths available where the maximum total reward is possible, i.e.,
+
+DRRURDDLLDRRR
+DDDRRULURURDDD
+DDDRUURDRDLDR
+RRRDLLDDRDRURD
+Out of these, the lexicographically first maximum total reward possible path is "DDDRRULURURDDD".
+
+Example 2:
+Input:
+3 4
+14 19 2 5
+20 0 2 17
+14 20 16 20
+Output:
+DDRRULURRDD
+Explanation: Here, in the given grid of 3x4, there are multiple paths available, such as
+
+RRRULLDRRR
+DDRRULURRDD
+So, the lexicographically first maximum total reward possible path will be "DDRRULURRDD", which will be printed as an output.
+
+Follow-up
+A basic C++ structure is provided below for your reference:
+
+#include <iostream>
+using namespace std;
+
+string computeMaxRewardPath(int R, int C, int reward[1000][1000]) // R and C are the number of warehouse
+                                                                // rows and columns, and reward is the 2D grid that contains reward values of the zones in the
+{
+    string result = "";
+
+    return result;
+}
+
+int main() {
+    int R, C;
+    cin >> R >> C;
+    int reward[1000][1000];
+
+    for (int i = 0; i < R; ++i)
+    {
+        for (int j = 0; j < C; ++j)
+        {
+            cin >> reward[i][j];
+        }
+    }
+
+    cout << computeMaxRewardPath(R, C, reward) << endl;
+
+    return 0;
+}
+
+Code:
+#include <bits/stdc++.h>
+using namespace std;
+
+string computeMaxRewardPath(int R, int C, vector<vector<int>>& reward) {
+    string path = "";
+
+    // Case 1: Odd rows
+    if (R % 2 == 1) {
+        for (int i = 0; i < R; i++) {
+            if (i % 2 == 0) path.append(C - 1, 'R');
+            else path.append(C - 1, 'L');
+            if (i != R - 1) path.push_back('D');
+        }
+        return path;
+    }
+
+    // Case 2: Odd columns
+    if (C % 2 == 1) {
+        for (int j = 0; j < C; j++) {
+            if (j % 2 == 0) path.append(R - 1, 'D');
+            else path.append(R - 1, 'U');
+            if (j != C - 1) path.push_back('R');
+        }
+        return path;
+    }
+
+    // Case 3: Both R and C are even
+    // Find the "bad" cell to skip
+    int skip_r = 0, skip_c = 1;
+    for (int i = 0; i < R; i++) {
+        for (int j = 0; j < C; j++) {
+            if ((i + j) % 2 == 1) {
+                if (reward[i][j] < reward[skip_r][skip_c]) {
+                    skip_r = i, skip_c = j;
+                }
+            }
+        }
+    }
+
+    // Build path strip by strip
+    int sr = (skip_r / 2) * 2; // top row of the special 2-row strip
+    // Traverse full 2-row strips above special strip
+    for (int i = 0; i < sr; i++) {
+        if (i % 2 == 0) path.append(C - 1, 'R');
+        else path.append(C - 1, 'L');
+        path.push_back('D');
+    }
+
+    // Traverse the special 2-row strip
+    int r = sr;
+    int c = 0;
+    while (c < C - 1) {
+        if (r == skip_r && c == skip_c - 1) {
+            path.push_back('R');
+            c++;
+        } else if (r == skip_r && c == skip_c) {
+            path.push_back('R');
+            c++;
+        } else {
+            if (r == sr) {
+                path.push_back('D');
+                r++;
+            } else {
+                path.push_back('U');
+                r--;
+                path.push_back('R');
+                c++;
+            }
+        }
+    }
+    // fix final row alignment
+    if (r == sr) {
+        path.push_back('D');
+        r++;
+    }
+
+    // Traverse full 2-row strips below special strip
+    for (int i = sr + 2; i < R; i++) {
+        path.push_back('D');
+        if (i % 2 == 0) path.append(C - 1, 'R');
+        else path.append(C - 1, 'L');
+    }
+
+    return path;
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int R, C;
+    cin >> R >> C;
+    vector<vector<int>> reward(R, vector<int>(C));
+    for (int i = 0; i < R; i++) {
+        for (int j = 0; j < C; j++) {
+            cin >> reward[i][j];
+        }
+    }
+
+    cout << computeMaxRewardPath(R, C, reward) << "\n";
+    return 0;
+}
