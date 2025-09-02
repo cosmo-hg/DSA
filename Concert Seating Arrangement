@@ -1,0 +1,127 @@
+Concert Seating Arrangement
+Problem Description
+Alex is organizing a concert and needs to manage the seating arrangement based on ticket types. Each ticket type is represented by a unique English alphabet letter, and groups of people arriving together holding the same ticket type sit together in one block. Alex also has a special VIP section at the front that is always reserved for one individual, regardless of the seating arrangement.
+
+Help Alex with a program that accepts a number N indicating the number of ticket holders, and an array ticketType containing N uppercase English alphabet letters representing the ticket type of each person, to determine how many distinct seating blocks are needed based on ticket types. A new seating block starts every time there is a change in the ticket type, and the VIP seat must always be included as its separate block at the start.
+
+Read the input from STDIN and print the output to STDOUT. Do not print arbitrary strings anywhere in the program, as these contribute to the standard output, and test cases will fail.
+
+Constraints
+1 <= N <= 10^7
+Each ticket type is an uppercase letter (e.g., 'A', 'B', 'C')
+Input Format
+The first line will have an integer N, the number of ticket holders.
+
+The second line will have N uppercase letters (ticketType) separated by spaces, each representing the ticket type of one ticket holder, in sequence.
+
+Output Format
+The output should be an integer representing the total number of seating blocks required, including the VIP block.
+
+Examples
+Example 1:
+Input:
+6
+A A B C B D
+Output: 6
+Explanation:
+
+The total number of ticket holders, N, is 6.
+
+VIP Seat: 1 block
+Block 1: Ticket holders 1 and 2 have ticket type A, and will be in one block
+Block 2: Ticket holder 3 (B)
+Block 3: Ticket holder 4 (C)
+Block 4: Ticket holder 5 (B)
+Block 5: Ticket holder 6 (D)
+Therefore, there are 6 ticket blocks.
+
+Example 2:
+Input:
+3
+C Z P
+Output: 4
+Explanation: Similarly, here, Alex needs 4 blocks to accommodate all the groups with a VIP block.
+
+Function Signature
+The function signature provided is:
+
+int generateResult(int N, vector<string>& ticketType) {
+    // WRITE YOUR CODE HERE
+}
+
+Code:
+#include <bits/stdc++.h>
+using namespace std;
+
+/*
+ * Complete this function.
+ * N = number of ticket holders
+ * ticketType = sequence of uppercase letters as strings like "A", "B"
+ *
+ * Return total seating blocks including the VIP block at the front.
+ */
+int generateResult(int N, vector<string>& ticketType) {
+    int cnt =1;
+    for(int i=1;i<N;i++){
+        if(ticketType[i] == ticketType[i-1]){
+            continue;
+        }else{
+            cnt++;
+        }
+    }
+    return cnt+1; // placeholder
+}
+
+/* -----------------------------
+   Test harness for quick checks
+   ----------------------------- */
+struct Case {
+    int N;
+    vector<string> ticketType;
+    int expected;
+    string name;
+};
+
+void run_tests() {
+    vector<Case> tests = {
+        {6, {"A","A","B","C","B","D"}, 6, "example 1"},
+        {3, {"C","Z","P"}, 4, "example 2"},
+        {1, {"A"}, 2, "single person"},
+        {5, {"X","X","X","X","X"}, 2, "all same"},
+        {7, {"A","B","B","B","C","C","A"}, 5, "mixed"}
+    };
+
+    for (int i = 0; i < (int)tests.size(); i++) {
+        auto &tc = tests[i];
+        int got = generateResult(tc.N, tc.ticketType);
+        cout << "test " << i + 1 << " … " << tc.name
+             << " … expected " << tc.expected
+             << ", got " << got
+             << " … " << (got == tc.expected ? "PASS" : "FAIL")
+             << "\n";
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    run_tests();
+    return 0;
+}
+
+/*
+If you want stdin version later… uncomment and use this main instead.
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int N; 
+    if (!(cin >> N)) return 0;
+    vector<string> ticketType(N);
+    for (int i = 0; i < N; i++) cin >> ticketType[i];
+
+    cout << generateResult(N, ticketType) << "\n";
+    return 0;
+}
+*/
