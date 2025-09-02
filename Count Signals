@@ -1,0 +1,131 @@
+Count Signals
+Problem Description
+Signal filtering based on frequency is essential to minimize noise outside the desired frequency range. Filters can be combined such that only frequencies within the permissible range of all filters can pass through.
+
+For instance, three filters with frequency ranges (10, 17), (13, 15), and (13, 17) will only allow frequencies between 13 and 15 to pass through, as this is the only overlapping range.
+
+Given n signal frequencies and a sequence of m filters with specified frequency ranges from x to y (inclusive), determine how many signals will pass through all the filters. There will be a single common range where all filters overlap.
+
+Examples
+Example 1:
+Input:
+frequencies = [8, 15, 14, 16, 21]
+filtersRanges = [[10, 17], [13, 15], [13, 17]]
+Output: 2
+Explanation: The range that all of the filters allow through is from 13 to 15, inclusive. The 2 frequencies that will pass through all filters have frequencies of 15 and 14. Return 2.
+
+Function Description
+Complete the countSignals function in the editor with the following parameter(s):
+
+int frequencies[n]: the frequencies of the signals sent through the filters
+int filterRanges[m][2]: the lower and upper frequency bounds for each filter
+Returns:
+
+int: the number of signals that pass through all filters
+Constraints
+1 <= n <= 10^5
+1 <= frequencies[i] <= 10^9
+1 <= m <= 10^5
+1 <= filterRanges[j][k] <= 10^9
+Sample Case 0
+Input:
+n = 5
+frequencies = [20, 5, 6, 7, 12]
+m = 3
+filterRanges = [[10, 20], [5, 15], [5, 30]]
+Output: 1
+Explanation: The common pass-through range is 10 to 15, so only frequency 12 passes through.
+
+
+Code:
+#include <bits/stdc++.h>
+using namespace std;
+
+/*
+ * Complete this function.
+ * frequencies: list of signal frequencies
+ * filterRanges: each pair {L, R} is an inclusive allowed range
+ *
+ * Return how many frequencies lie inside the intersection of all ranges.
+ */
+int countSignals(const vector<long long>& frequencies,
+                 const vector<pair<long long,long long>>& filterRanges) {
+    int n = frequencies.size();
+    int m = filterRanges.size();
+    int cnt=0;
+    long long maxl = INT_MIN;
+    long long minr = INT_MAX;
+    for(int i=0;i<m;i++){
+        maxl = max(maxl,filterRanges[i].first);
+        minr = min(minr,filterRanges[i].second);
+    }
+    
+    for(int j=0;j<n;j++){
+        if(frequencies[j] >= maxl && frequencies[j] <= minr){
+            cnt++;
+        }
+    }
+    
+    return cnt; // placeholder
+}
+
+/* -----------------------------
+   test harness for quick checks
+   ----------------------------- */
+struct Case {
+    vector<long long> freq;
+    vector<pair<long long,long long>> ranges;
+    int expected;
+    string name;
+};
+
+void run_tests() {
+    vector<Case> tests = {
+        { {8, 15, 14, 16, 21}, {{10,17},{13,15},{13,17}}, 2, "example 1" },
+        { {20, 5, 6, 7, 12},   {{10,20},{5,15},{5,30}},    1, "sample 0" },
+        { {1,2,3,4,5},         {{6,10}},                   0, "no overlap with data" },
+        { {10,11,12,13,14,15}, {{10,15}},                  6, "single range, all pass" },
+        { {100,200,300},       {{1,1000},{50,250}},        2, "simple intersection" }
+    };
+
+    for (int i = 0; i < (int)tests.size(); i++) {
+        auto& tc = tests[i];
+        int got = countSignals(tc.freq, tc.ranges);
+        cout << "test " << i + 1 << " … " << tc.name
+             << " … expected " << tc.expected
+             << ", got " << got
+             << " … " << (got == tc.expected ? "PASS" : "FAIL")
+             << "\n";
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    run_tests();
+    return 0;
+}
+
+/*
+If you want stdin version later, use this main:
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n; cin >> n;
+    vector<long long> frequencies(n);
+    for (int i = 0; i < n; i++) cin >> frequencies[i];
+
+    int m; cin >> m;
+    vector<pair<long long,long long>> filterRanges(m);
+    for (int j = 0; j < m; j++) {
+        long long L, R; cin >> L >> R;
+        filterRanges[j] = {L, R};
+    }
+
+    cout << countSignals(frequencies, filterRanges) << "\n";
+    return 0;
+}
+*/
